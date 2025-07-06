@@ -30,7 +30,6 @@ model Question {
   @@map("questions")
 }
 
-
 enum QuestionType {
   BOOLEAN
   INPUT

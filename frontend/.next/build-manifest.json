@@ -31,6 +31,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/create.js"
+    ],
+    "/quizzes/[id]": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/quizzes/[id].js"
     ]
   },
   "ampFirstPages": []
