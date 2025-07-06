@@ -9,11 +9,11 @@ dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3005;
 
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: ['http://localhost:3000', 'http://localhost:3002'],
   credentials: true
 }));
 
@@ -27,10 +27,11 @@ app.get('/health', (req, res) => {
 });
 app.use(errorHandler);
 
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`CORS enabled for: ${process.env.FRONTEND_URL}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log('CORS enabled for: http://localhost:3000, http://localhost:3002');
 });
 
 process.on('SIGINT', async () => {

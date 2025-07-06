@@ -13,22 +13,22 @@ const quiz1 =await prisma.quiz.create({
         {
           text: 'JavaScript is compiled language',
           type: QuestionType.BOOLEAN,
-          options: ['True', ' False'],
-          correctAnswers: ['False'],
+          options: JSON.stringify(['True', ' False']) as any,
+          correctAnswers: JSON.stringify(['False']) as any,
           order: 0
         },
         {
             text: 'What is the output of typeof null?',
             type: QuestionType.INPUT,
-            options: [],
-            correctAnswers: ['object'],
+            options: JSON.stringify([]) as any,
+            correctAnswers: JSON.stringify(['object']) as any,
             order: 1
           },
           {
             text: 'Which of the following are JavaScript data types?',
             type: QuestionType.CHECKBOX,
-            options: ['String', 'Number', 'Boolean', 'Array', 'Object'],
-            correctAnswers: ['String', 'Number', 'Boolean', 'Object'],
+            options: JSON.stringify(['String', 'Number', 'Boolean', 'Array', 'Object']) as any,
+            correctAnswers: JSON.stringify(['String', 'Number', 'Boolean', 'Object']) as any,
             order: 2
           }
         ]
@@ -44,22 +44,22 @@ const quiz1 =await prisma.quiz.create({
           {
             text: 'React components must return a single element',
             type: QuestionType.BOOLEAN,
-            options: ['True', 'False'],
-            correctAnswers: ['False'],
+            options: JSON.stringify(['True', 'False']) as any,
+            correctAnswers: JSON.stringify(['False']) as any,
             order: 0
           },
           {
             text: 'What hook is used for managing state in functional components?',
             type: QuestionType.INPUT,
-            options: [],
-            correctAnswers: ['useState'],
+            options: JSON.stringify([]) as any,
+            correctAnswers: JSON.stringify(['useState']) as any,
             order: 1
           },
           {
             text: 'Which are valid React hooks?',
             type: QuestionType.CHECKBOX,
-            options: ['useState', 'useEffect', 'useContext', 'useRouter', 'useCallback'],
-            correctAnswers: ['useState', 'useEffect', 'useContext', 'useCallback'],
+            options: JSON.stringify(['useState', 'useEffect', 'useContext', 'useRouter', 'useCallback']) as any,
+            correctAnswers: JSON.stringify(['useState', 'useEffect', 'useContext', 'useCallback']) as any,
             order: 2
           }
         ]
