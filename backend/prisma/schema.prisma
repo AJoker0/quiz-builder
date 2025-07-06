@@ -1,35 +1,35 @@
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model Quiz {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   title     String
   questions Question[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@map("quizzes")
 }
 
 model Question {
-  id       String      @id @default(uuid())
-  text     String
-  type     QuestionType
-  options  String[]    // For checkbox and boolean questions
-  correctAnswers String[] // For validation (not used in this read-only version)
-  quiz     Quiz        @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  quizId   String
-  order    Int         @default(0)
+  id             String   @id @default(uuid())
+  text           String
+  type           QuestionType
+  options        String   // stored as JSON
+  correctAnswers String   // stored as JSON
+  quiz           Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quizId         String
+  order          Int      @default(0)
 
   @@map("questions")
 }
+
 
 enum QuestionType {
   BOOLEAN

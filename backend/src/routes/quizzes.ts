@@ -1,40 +1,41 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, QuestionType } from '@prisma/client';
 import { z } from 'zod';
-import { QuestionType } from '@prisma/client';
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
 const QuestionSchema = z.object({
   text: z.string().min(1, 'Question text is required'),
   type: z.nativeEnum(QuestionType),
   options: z.array(z.string()).optional().default([]),
-  correctAnswers: z.array(z.string()).optional().default([])
+  correctAnswers: z.array(z.string()).optional().default([]),
 });
 
 const CreateQuizSchema = z.object({
   title: z.string().min(1, 'Quiz title is required'),
-  questions: z.array(QuestionSchema).min(1, 'At least one question is required')
+  questions: z.array(QuestionSchema).min(1, 'At least one question is required'),
 });
 
+// GET /quizzes - Get all quizzes
 router.get('/', async (req, res) => {
   try {
     const quizzes = await prisma.quiz.findMany({
       include: {
         _count: {
-          select: { questions: true }
-        }
+          select: { questions: true },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     });
 
-    const formattedQuizzes = quizzes.map(quiz => ({
+    const formattedQuizzes = quizzes.map((quiz) => ({
       id: quiz.id,
       title: quiz.title,
       questionCount: quiz._count.questions,
-      createdAt: quiz.createdAt
+      createdAt: quiz.createdAt,
     }));
 
     res.json(formattedQuizzes);
@@ -54,17 +55,26 @@ router.get('/:id', async (req, res) => {
       include: {
         questions: {
           orderBy: {
-            order: 'asc'
-          }
-        }
-      }
+            order: 'asc',
+          },
+        },
+      },
     });
 
     if (!quiz) {
       return res.status(404).json({ error: 'Quiz not found' });
     }
 
-    res.json(quiz);
+    const parsedQuiz = {
+      ...quiz,
+      questions: quiz.questions.map((q) => ({
+        ...q,
+        options: JSON.parse(q.options),
+        correctAnswers: JSON.parse(q.correctAnswers),
+      })),
+    };
+
+    res.json(parsedQuiz);
   } catch (error) {
     console.error('Error fetching quiz:', error);
     res.status(500).json({ error: 'Failed to fetch quiz' });
@@ -80,30 +90,39 @@ router.post('/', async (req, res) => {
       data: {
         title: validatedData.title,
         questions: {
-          create: validatedData.questions.map((question, index) => ({
-            text: question.text,
-            type: question.type,
-            options: question.options,
-            correctAnswers: question.correctAnswers,
-            order: index
-          }))
-        }
+  create: validatedData.questions.map((question, index) => ({
+    text: question.text,
+    type: question.type,
+    options: JSON.stringify(question.options),
+    correctAnswers: JSON.stringify(question.correctAnswers),
+    order: index
+  })),
+},
       },
       include: {
         questions: {
           orderBy: {
-            order: 'asc'
-          }
-        }
-      }
+            order: 'asc',
+          },
+        },
+      },
     });
 
-    res.status(201).json(quiz);
+    const parsedQuiz = {
+      ...quiz,
+      questions: quiz.questions.map((q) => ({
+        ...q,
+        options: JSON.parse(q.options),
+        correctAnswers: JSON.parse(q.correctAnswers),
+      })),
+    };
+
+    res.status(201).json(parsedQuiz);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         error: 'Validation error',
-        details: error.errors
+        details: error.errors,
       });
     }
 
@@ -118,7 +137,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     const quiz = await prisma.quiz.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!quiz) {
@@ -126,7 +145,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     await prisma.quiz.delete({
-      where: { id }
+      where: { id },
     });
 
     res.json({ message: 'Quiz deleted successfully' });

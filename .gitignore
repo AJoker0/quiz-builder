@@ -1,0 +1,17 @@
+# Node
+node_modules/
+**/node_modules/
+
+# Output
+dist/
+build/
+
+# Env
+.env
+.env.*.local
+
+# Logs
+*.log
+
+# Prisma
+prisma/migrations/
